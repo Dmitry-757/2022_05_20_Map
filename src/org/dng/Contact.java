@@ -1,25 +1,58 @@
 package org.dng;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Contact {
-    private HashSet<Integer> phoneSet = new HashSet<>();
+
+public class Contact implements Comparable<Contact>{
+    private HashMap<Integer, String> contactPhoneMap = new HashMap<>();
     private String name;
 
     public Contact(String name) {
         this.name = name;
     }
 
-    public void addNewNumber(String contactName, int phoneNumber) throws Exception {
+    public String getName() {
+        return name;
+    }
 
-        if (Main.phoneBook.isNumberPresent(phoneNumber)){
-            throw new Exception("This number is already present!");
+    public void addNewNumber(int phoneNumber, String note) throws Exception {
+
+        if (PhoneBook.isNumberPresent(phoneNumber)){
+            throw new Exception("This number is already present in phone book!");
         }
 
-        if (phoneSet.contains(phoneNumber)){
-            throw new Exception("This contact is already present!");
+        if (contactPhoneMap.containsKey(phoneNumber)){
+            throw new Exception("This contact is already present in this contact!");
         }
-        phoneSet.add(phoneNumber);
-        Main.phoneBook.addNewRecord(phoneNumber, this);
+        contactPhoneMap.put(phoneNumber, note);
+        PhoneBook.addNewRecord(phoneNumber, this);
+    }
+
+    @NonCLI
+    public String getContactInfo(){
+        String res = toString();
+
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Integer, String> phone:contactPhoneMap.entrySet()){
+            sb.append("\n phone:").append(phone.getKey()).append(" note:").append(phone.getValue());
+        }
+        if (!sb.isEmpty()){
+            sb.append("\n}");
+            res+=sb.toString();
+        }
+
+        return res;
+    }
+
+    @Override
+    public String toString() {
+        return "\nContact: {" +
+                "name = " + name ;
+    }
+
+    @Override
+    public int compareTo(Contact o) {
+        return this.getName().compareTo(o.getName());
     }
 }
